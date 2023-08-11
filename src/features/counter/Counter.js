@@ -6,6 +6,8 @@ import { go } from "../../app/store";
  *  - what if your component has multiple kinds of state it wants to track? Should be able
  *    to define multiple functions
  *  - what if your component needs to fetch some async data as part of its state init?
+ *  - generally speaking the state should persist across mount/unmount, though we should
+ *    provide the option not to
  * */
 
 export const Counter = go(

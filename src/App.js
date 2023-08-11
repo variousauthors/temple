@@ -3,10 +3,13 @@ import "./App.css";
 import { Provider } from "react-redux";
 import { Counter } from "./features/counter/Counter";
 import configureStore from "./app/store";
+import { useState } from "react";
 
 const store = configureStore();
 
 function App() {
+  const [show, setShow] = useState(true);
+
   return (
     <Provider store={store}>
       <div className="App">
@@ -16,6 +19,10 @@ function App() {
             Edit <code>src/App.js</code> and save to reload.
           </p>
           <Counter />
+          <button onClick={() => setShow(!show)}>
+            {show ? "hide" : "show"}
+          </button>
+          {show ? <Counter /> : null}
           <a
             className="App-link"
             href="https://reactjs.org"
