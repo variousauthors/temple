@@ -18,10 +18,11 @@ function App() {
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
-          <Counter />
+          <Counter id="static" />
           <button onClick={() => setShow(!show)}>
             {show ? "hide" : "show"}
           </button>
+          {show ? <Counter id="dynamic" /> : null}
           {show ? <Counter /> : null}
           <a
             className="App-link"

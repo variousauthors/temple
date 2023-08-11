@@ -3,33 +3,45 @@ import { go } from "../../app/store";
 
 /**
  * TODO
- *  - what if your component has multiple kinds of state it wants to track? Should be able
+ * [] state functions should receive store and dispatch as arguments
+ *    - this way you can define a component Counter but not decide how it
+ *      tracks state, then in the parent you can do `go(myStateStuff, Counter)`
+ *      and use knowledge of the parent state etc...
+ * [] what if your component has multiple kinds of state it wants to track? Should be able
  *    to define multiple functions
- *  - what if your component needs to fetch some async data as part of its state init?
- *  - generally speaking the state should persist across mount/unmount, though we should
+ * [] multiple components of the same type should either share, or not share state, configurable
+ *    - with decorators it could be
+ *    - @local counterState
+ *    - @global counterState
+ * [] what if your component needs to fetch some async data as part of its state init?
+ * [x] generally speaking the state should persist across mount/unmount, though we should
  *    provide the option not to
+ *    - if you pass an id to your component it will persist across mounts/unmounts
  * */
 
+function counterState() {
+  const initialState = {
+    count: 0,
+  };
+
+  const increment = (state) => {
+    state.count += 1;
+  };
+
+  const decrement = (state) => {
+    state.count -= 1;
+  };
+
+  return {
+    initialState,
+    increment,
+    decrement,
+  };
+}
+
+// could use decorators!
 export const Counter = go(
-  () => {
-    const initialState = {
-      count: 0,
-    };
-
-    const increment = (state) => {
-      state.count += 1;
-    };
-
-    const decrement = (state) => {
-      state.count -= 1;
-    };
-
-    return {
-      initialState,
-      increment,
-      decrement,
-    };
-  },
+  counterState,
   function Counter({ increment, decrement, count }) {
     return (
       <div>

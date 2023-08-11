@@ -5,7 +5,10 @@ import {
 import { createSlice } from "@reduxjs/toolkit";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { v4 as uuid } from "uuid";
+import { v5 as uuid } from "uuid";
+
+// seed for the uuid v5
+const NAMESPACE = "8891e6e8-60c3-4702-8979-033897e0cc7e";
 
 function createReducer(next) {
   if (!next) {
@@ -99,13 +102,10 @@ export function go(stuff, component) {
     });
 
     getStore().injectReducer(name, slice.reducer);
-
-    const actions = slice.actions;
-    console.log("actions", actions);
   }
 
   const next = function Next(props) {
-    const [id, _] = useState(uuid());
+    const [id, _] = useState(uuid(props.id || "", NAMESPACE));
 
     useEffect(() => {
       // we add another instance to the array
@@ -116,26 +116,33 @@ export function go(stuff, component) {
           initialState,
         },
       });
+
+      return () => {
+        if (!props.id) {
+          store.dispatch({
+            type: `${name}/removeInstance`,
+            payload: {
+              id,
+            },
+          });
+        }
+      };
+    }, [id, props.id]);
+
+    const actionCreators = useMemo(() => {
+      return Object.keys(reducers).reduce((acc, key) => {
+        return {
+          ...acc,
+          [key]: (payload) => ({
+            type: `${name}/${key}`,
+            payload: {
+              ...payload,
+              id,
+            },
+          }),
+        };
+      }, []);
     }, [id]);
-
-    const actionCreators = useMemo(
-      () =>
-        Object.keys(reducers).reduce((acc, key) => {
-          return {
-            ...acc,
-            [key]: (payload) => ({
-              type: `${name}/${key}`,
-              payload: {
-                ...payload,
-                id,
-              },
-            }),
-          };
-        }, []),
-      [id]
-    );
-
-    console.log("actions", actionCreators);
 
     const state = useSelector((state) => {
       if (state[name][id]) {
@@ -147,19 +154,18 @@ export function go(stuff, component) {
 
     const dispatch = useDispatch();
 
-    const dispatchers = Object.entries(actionCreators).reduce(
-      (acc, [key, value]) => {
+    const callbacks = useMemo(() => {
+      return Object.entries(actionCreators).reduce((acc, [key, value]) => {
         return {
           ...acc,
           [key]: (payload) => dispatch(value(payload)),
         };
-      },
-      {}
-    );
+      }, {});
+    }, [dispatch, actionCreators]);
 
     return component({
       ...state,
-      ...dispatchers,
+      ...callbacks,
       ...props,
     });
   };
