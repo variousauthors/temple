@@ -1,70 +1,48 @@
-# Getting Started with Create React App
+# Temple
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Just fiddling with old-school HOC based state management in more modern react.
 
-## Available Scripts
+```js
+export const Counter = go({
+    initialState: {
+      count: 0
+    },
+    increment: (state) => {
+      state.count += 1;
+    },
+    decrement: (state) => {
+      state.count -= 1;
+    }
+  },
+  function Counter({ increment, decrement, count }) {
+    return (
+      <div>
+        <div>
+          <button aria-label="Increment value" onClick={() => increment()}>
+            Increment
+          </button>
+          <span>{count}</span>
+          <button aria-label="Decrement value" onClick={() => decrement()}>
+            Decrement
+          </button>
+        </div>
+      </div>
+    );
+  }
+);
+```
 
-In the project directory, you can run:
+The idea is that `go` wraps `Counter` with a use effect that sets up a redux store slice to manage the component state. It optionally removes the store slice when the component is unmounted. So for example:
 
-### `npm start`
+```js
+<Counter id="static" />
+<button onClick={() => setShow(!show)}>
+  {show ? "hide" : "show"}
+</button>
+{show ? <Counter id="dynamic" /> : null}
+{show ? <Counter id="dynamic" /> : null}
+{show ? <Counter /> : null}
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+On initial render there is just one store slice for the visible Counter. When the user clicks show, two more slices are created: one for the Counter with the `id` property set, and one for the Counter without the `id` property. Incrementing the Counters that share a state slice updates both. When the user clicks hide, the reduce state slice for the Counter with no `id` property is destroyed, but the slice for the two Counters that have `id` properties will persist such that when they are re-mounted later they will attach to that slice.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
