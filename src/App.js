@@ -23,6 +23,7 @@ function App() {
             {show ? "hide" : "show"}
           </button>
           {show ? <Counter id="dynamic" /> : null}
+          {show ? <Counter id="dynamic" /> : null}
           {show ? <Counter /> : null}
           <a
             className="App-link"

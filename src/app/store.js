@@ -66,13 +66,13 @@ export function go(stuff, component) {
   if (!state[name]) {
     // we need to build up a slice manager for this type of data
     const abstractReducers = Object.entries(reducers).reduce(
-      (acc, [key, entry]) => {
+      (acc, [key, reducer]) => {
         return {
           ...acc,
           [key]: (state, action) => {
             const instanceState = state[action.payload.id];
 
-            return entry(instanceState, action);
+            return reducer(instanceState, action);
           },
         };
       },
